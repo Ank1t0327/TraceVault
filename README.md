@@ -1,0 +1,41 @@
+# TraceVault
+
+TraceVault is a foundational Digital Forensics toolkit.
+
+## Digital Forensics Core Concepts
+
+Digital forensics involves the recovery and investigation of material found in digital devices, often in relation to computer crime.
+
+### Evidence vs Artifacts
+- **Evidence**: Data or physical items that can be presented in court to prove or disprove a fact.
+- **Artifacts**: Objects or data created by the operating system or applications (e.g., registry keys, log files) that hold forensic value but may not directly prove a crime without context.
+
+### The Forensics Process
+1. **Acquisition**: The process of creating an exact duplicate (forensic image) of the original digital media.
+2. **Preservation**: Ensuring the data is not altered or destroyed. This involves write-blockers and secure storage.
+3. **Analysis**: Examining the acquired data to extract relevant information, using tools to parse artifacts and reconstruct events.
+4. **Reporting**: Documenting the findings in a clear, concise, and reproducible manner.
+
+### Hashing
+Hashing (e.g., MD5, SHA-256) is used to verify data integrity. It acts as a digital fingerprint for files. If a file changes, its hash changes. We use hashing to prove that evidence has not been tampered with since acquisition.
+
+### Chain of Custody
+A chronological documentation or paper trail that records the sequence of custody, control, transfer, analysis, and disposition of evidence. It is critical for the admissibility of evidence in court.
+
+## Project Structure
+- `src/collectors/`: Modules for acquiring data.
+- `src/analyzers/`: Modules for analyzing acquired data.
+- `src/parsers/`: Modules for parsing specific artifacts.
+- `src/utils/`: Helper functions (hashing, logging).
+- `src/reporting/`: Modules for generating reports.
+- `evidence/`: Directory to store acquired evidence.
+- `reports/`: Directory to store generated reports.
+- `tests/`: Unit tests.
+
+## Usage
+```bash
+python tracevault.py --help
+python tracevault.py collect
+python tracevault.py analyze
+python tracevault.py report
+```
