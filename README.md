@@ -39,3 +39,10 @@ python tracevault.py collect
 python tracevault.py analyze
 python tracevault.py report
 ```
+
+## Day 2: Evidence Integrity
+- Added file hashing (SHA-256, SHA-1, MD5)
+- Added metadata collection
+- Added evidence record generation
+- Added `verify` and `record` commands to CLI
+
