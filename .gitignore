@@ -1,0 +1,7 @@
+__pycache__/
+*.pyc
+.pytest_cache/
+test_*.txt
+test_hash.txt
+test_meta.txt
+evidence/*.dd
