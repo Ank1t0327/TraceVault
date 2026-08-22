@@ -40,4 +40,21 @@ class FileSystemAnalyzer:
             return True
         return os.access(filepath, os.X_OK) and not os.path.isdir(filepath)
 
+    @staticmethod
+    def is_suspicious_filename(filepath):
+        """Check for suspicious keywords in the filename."""
+        suspicious_keywords = ['malware', 'hack', 'crack', 'payload', 'exploit', 'backdoor']
+        basename = os.path.basename(filepath).lower()
+        
+        # Check double extensions (e.g. file.txt.exe)
+        parts = basename.split('.')
+        if len(parts) > 2 and parts[-1] in {'exe', 'bat', 'cmd', 'sh', 'vbs'}:
+            return True
+            
+        for keyword in suspicious_keywords:
+            if keyword in basename:
+                return True
+        return False
+
+
 
