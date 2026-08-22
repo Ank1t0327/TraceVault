@@ -46,3 +46,8 @@ python tracevault.py report
 - Added evidence record generation
 - Added `verify` and `record` commands to CLI
 
+
+### Day 2: Evidence Integrity
+- Implemented file hashing (SHA-256, SHA-1, MD5).
+- Added metadata collection (Size, timestamps, types).
+- Introduced Evidence Record generation.
