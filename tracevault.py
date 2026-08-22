@@ -79,6 +79,8 @@ def main():
     
     # Analyze command
     parser_analyze = subparsers.add_parser("analyze", help="Analyze forensic artifacts and evidence")
+    parser_analyze.add_argument("path", help="Directory or file to analyze")
+    parser_analyze.add_argument("--type", help="Filter by type (e.g., executable, hidden, suspicious, large, recent)")
     parser_analyze.set_defaults(func=analyze)
     
     # Report command
