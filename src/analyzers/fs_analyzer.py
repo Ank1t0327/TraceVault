@@ -31,3 +31,13 @@ class FileSystemAnalyzer:
         except OSError:
             return False
 
+    @staticmethod
+    def is_executable(filepath):
+        """Check if a file is an executable (by extension or permission)."""
+        executable_exts = {'.exe', '.dll', '.sh', '.bin', '.bat', '.cmd'}
+        _, ext = os.path.splitext(filepath)
+        if ext.lower() in executable_exts:
+            return True
+        return os.access(filepath, os.X_OK) and not os.path.isdir(filepath)
+
+
