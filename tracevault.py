@@ -3,8 +3,8 @@ import sys
 import os
 import json
 from src.utils.hashing import calculate_hashes
-from src.collectors.metadata import get_file_metadata
-from src.reporting.evidence_record import create_evidence_record, display_evidence_record
+from src.utils.metadata import get_file_metadata
+from src.collectors.evidence_record import EvidenceRecord
 
 def collect(args):
     print("Initializing acquisition phase...")
@@ -23,7 +23,7 @@ def verify(args):
     hashes = calculate_hashes(args.file)
     if hashes:
         print("SHA-256:")
-        print(f"{hashes['SHA-256']}\n")
+        print(f"{hashes['sha256']}\n")
         print("Status:")
         print("✓ Evidence integrity recorded\n")
         
@@ -31,23 +31,25 @@ def verify(args):
             print("Metadata:")
             metadata = get_file_metadata(args.file)
             for k, v in metadata.items():
-                if k != "Hashes":
-                    print(f"{k}: {v}")
+                print(f"{k.capitalize()}: {v}")
     else:
         print("File not found or unreadable.")
 
 def record(args):
+    hashes = calculate_hashes(args.file)
     metadata = get_file_metadata(args.file)
-    if metadata and metadata["Hashes"]:
-        primary_hash = metadata["Hashes"]["SHA-256"]
-        rec = create_evidence_record(
+    if hashes and metadata:
+        primary_hash = hashes["sha256"]
+        rec = EvidenceRecord(
+            hash_sha256=primary_hash,
             source=args.source,
             analyst=args.analyst,
             description=args.description,
-            primary_hash=primary_hash
+            metadata=metadata,
+            hashes=hashes
         )
         print("✓ Evidence record created:")
-        display_evidence_record(rec)
+        print(rec.to_json())
     else:
         print("Failed to generate record. File not found.")
 
