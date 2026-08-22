@@ -20,3 +20,14 @@ class FileSystemAnalyzer:
             return size_mb >= threshold_mb
         except OSError:
             return False
+
+    @staticmethod
+    def is_recently_modified(filepath, days=7):
+        """Check if file was modified recently."""
+        try:
+            mtime = os.path.getmtime(filepath)
+            current_time = time.time()
+            return (current_time - mtime) <= (days * 86400)
+        except OSError:
+            return False
+
