@@ -41,13 +41,14 @@ python tracevault.py report
 ```
 
 ## Day 2: Evidence Integrity
-- Added file hashing (SHA-256, SHA-1, MD5)
-- Added metadata collection
-- Added evidence record generation
-- Added `verify` and `record` commands to CLI
-
-
-### Day 2: Evidence Integrity
 - Implemented file hashing (SHA-256, SHA-1, MD5).
 - Added metadata collection (Size, timestamps, types).
 - Introduced Evidence Record generation.
+- Added `verify` and `record` commands to CLI.
+
+## Day 3: File System Analysis
+- Implemented `FileSystemAnalyzer` for automated directory traversal.
+- Added analysis capabilities for identifying hidden files and large files.
+- Added detection for recently modified files and executables.
+- Built a suspicious filename detector handling known malware keywords and double extensions.
+- Added filtering support in `tracevault analyze --type <filter>` (e.g. `executable`, `suspicious`).
