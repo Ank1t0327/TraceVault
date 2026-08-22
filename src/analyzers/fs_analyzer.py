@@ -56,5 +56,53 @@ class FileSystemAnalyzer:
                 return True
         return False
 
+    def run(self, filter_type=None):
+        """Analyze the target directory and filter by type."""
+        results = []
+        if not os.path.exists(self.target_path):
+            return results
+
+        if os.path.isfile(self.target_path):
+            files = [self.target_path]
+        else:
+            files = []
+            for root, _, filenames in os.walk(self.target_path):
+                for f in filenames:
+                    files.append(os.path.join(root, f))
+
+        for filepath in files:
+            is_suspicious = False
+            flag = None
+
+            if filter_type == 'hidden' and self.is_hidden(filepath):
+                flag = 'Hidden file'
+                is_suspicious = True
+            elif filter_type == 'executable' and self.is_executable(filepath):
+                flag = 'Executable'
+                is_suspicious = True
+            elif filter_type == 'large' and self.is_large_file(filepath):
+                flag = 'Large file'
+                is_suspicious = True
+            elif filter_type == 'recent' and self.is_recently_modified(filepath):
+                flag = 'Recently modified'
+                is_suspicious = True
+            elif filter_type == 'suspicious' and self.is_suspicious_filename(filepath):
+                flag = 'Suspicious filename'
+                is_suspicious = True
+            elif filter_type is None:
+                if self.is_suspicious_filename(filepath):
+                    flag = 'Suspicious filename'
+                    is_suspicious = True
+
+            if is_suspicious:
+                results.append({
+                    "file": filepath,
+                    "type": flag,
+                    "modified": time.strftime('%Y-%m-%d', time.localtime(os.path.getmtime(filepath)))
+                })
+
+        return results
+
+
 
 
