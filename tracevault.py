@@ -5,14 +5,26 @@ import json
 from src.utils.hashing import calculate_hashes
 from src.utils.metadata import get_file_metadata
 from src.collectors.evidence_record import EvidenceRecord
+from src.analyzers.fs_analyzer import FileSystemAnalyzer
 
 def collect(args):
     print("Initializing acquisition phase...")
     print("Collecting digital evidence and maintaining chain of custody.")
 
 def analyze(args):
-    print("Initializing analysis phase...")
-    print("Analyzing artifacts and verifying hashes.")
+    analyzer = FileSystemAnalyzer(args.path)
+    results = analyzer.run(filter_type=args.type)
+    
+    if not results:
+        print("No interesting artifacts found.")
+        return
+
+    for res in results:
+        print(f"[!] {os.path.basename(res['file'])}")
+        print(f"    Location: {os.path.dirname(res['file'])}/")
+        print(f"    Type: {res['type']}")
+        print(f"    Modified: {res['modified']}\n")
+
 
 def report(args):
     print("Initializing reporting phase...")
