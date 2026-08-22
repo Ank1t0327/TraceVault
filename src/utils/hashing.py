@@ -1,25 +1,29 @@
 import hashlib
 
-def calculate_hashes(filepath):
-    """Calculates SHA-256, SHA-1, and MD5 hashes for a given file."""
-    sha256_hash = hashlib.sha256()
-    sha1_hash = hashlib.sha1()
+def calculate_hashes(filepath, chunk_size=8192):
+    """Calculate MD5, SHA-1, and SHA-256 hashes for a given file."""
     md5_hash = hashlib.md5()
-    
+    sha1_hash = hashlib.sha1()
+    sha256_hash = hashlib.sha256()
+
     try:
         with open(filepath, "rb") as f:
-            for byte_block in iter(lambda: f.read(4096), b""):
-                sha256_hash.update(byte_block)
-                sha1_hash.update(byte_block)
-                md5_hash.update(byte_block)
+            while chunk := f.read(chunk_size):
+                md5_hash.update(chunk)
+                sha1_hash.update(chunk)
+                sha256_hash.update(chunk)
                 
         return {
-            "SHA-256": sha256_hash.hexdigest(),
-            "SHA-1": sha1_hash.hexdigest(),
-            "MD5": md5_hash.hexdigest()
+            "md5": md5_hash.hexdigest(),
+            "sha1": sha1_hash.hexdigest(),
+            "sha256": sha256_hash.hexdigest(),
         }
     except FileNotFoundError:
         return None
-    except Exception as e:
-        print(f"Error hashing file: {e}")
-        return None
+
+def verify_hash(filepath, expected_hash, algorithm="sha256"):
+    """Verify if a file matches the expected hash."""
+    hashes = calculate_hashes(filepath)
+    if hashes is None:
+        return False
+    return hashes.get(algorithm.lower()) == expected_hash.lower()
