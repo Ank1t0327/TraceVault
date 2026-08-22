@@ -1,1 +1,1 @@
-# Initialize collectors module
+from .evidence_record import EvidenceRecord
