@@ -90,5 +90,93 @@ def extract_downloads(conn):
         pass
     return downloads
 
+from urllib.parse import parse_qs, urlparse
+
+def extract_search_terms(conn_or_urls):
+    """Extract search terms from URL query parameters (q, query, p, search)."""
+    search_queries = []
+    if isinstance(conn_or_urls, list):
+        urls = conn_or_urls
+    else:
+        urls = extract_urls_and_visits(conn_or_urls)
+
+    for item in urls:
+        raw_url = item.get("url", "")
+        parsed = urlparse(raw_url)
+        params = parse_qs(parsed.query)
+        for key in ["q", "query", "p", "search_query", "search"]:
+            if key in params:
+                for val in params[key]:
+                    if val.strip():
+                        search_queries.append({
+                            "engine": parsed.netloc,
+                            "term": val,
+                            "timestamp": item.get("timestamp"),
+                            "time_short": item.get("time_short", "00:00")
+                        })
+    return search_queries
+
+class ChromiumParser:
+    def __init__(self, history_db_path=None):
+        self.history_db_path = history_db_path or self.find_default_history_path()
+
+    @staticmethod
+    def find_default_history_path():
+        """Attempt to locate Chrome/Chromium history file on Linux/macOS/Windows."""
+        home = os.path.expanduser("~")
+        possible_paths = [
+            os.path.join(home, ".config", "google-chrome", "Default", "History"),
+            os.path.join(home, ".config", "chromium", "Default", "History"),
+            os.path.join(home, "Library", "Application Support", "Google", "Chrome", "Default", "History"),
+            os.path.join(home, "AppData", "Local", "Google", "Chrome", "User Data", "Default", "History"),
+        ]
+        for path in possible_paths:
+            if os.path.exists(path):
+                return path
+        return None
+
+    def parse(self):
+        """Parse browser history DB and return structured results."""
+        if not self.history_db_path or not os.path.exists(self.history_db_path):
+            return self.get_demo_data()
+
+        conn, temp_dir = open_sqlite_readonly(self.history_db_path)
+        if not conn:
+            return self.get_demo_data()
+
+        try:
+            urls = extract_urls_and_visits(conn)
+            downloads = extract_downloads(conn)
+            searches = extract_search_terms(urls)
+            return {
+                "urls": urls,
+                "downloads": downloads,
+                "searches": searches,
+                "source": self.history_db_path
+            }
+        finally:
+            conn.close()
+            if temp_dir and os.path.exists(temp_dir):
+                shutil.rmtree(temp_dir, ignore_errors=True)
+
+    @staticmethod
+    def get_demo_data():
+        """Provide fallback demonstration browser activity if no live history exists."""
+        return {
+            "urls": [
+                {"url": "https://suspicious-site.com/login", "title": "Suspicious Site", "time_short": "14:31"},
+                {"url": "https://download.example/file.exe", "title": "Index of /downloads", "time_short": "14:34"},
+                {"url": "https://github.com/Ank1t0327/TraceVault", "title": "Ank1t0327/TraceVault", "time_short": "14:36"},
+            ],
+            "downloads": [
+                {"filename": "file.exe", "path": "/Users/Test/Downloads/file.exe", "time_short": "14:34"}
+            ],
+            "searches": [
+                {"engine": "google.com", "term": "how to clear forensic traces", "time_short": "14:30"}
+            ],
+            "source": "Demonstration Artifacts"
+        }
+
+
 
 
