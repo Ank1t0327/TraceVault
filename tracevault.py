@@ -6,6 +6,25 @@ from src.utils.hashing import calculate_hashes
 from src.utils.metadata import get_file_metadata
 from src.collectors.evidence_record import EvidenceRecord
 from src.analyzers.fs_analyzer import FileSystemAnalyzer
+from src.parsers.chromium import ChromiumParser
+
+def browser_cmd(args):
+    path = getattr(args, 'path', None)
+    parser = ChromiumParser(history_db_path=path)
+    data = parser.parse()
+
+    print("Browser Activity\n")
+    urls = data.get("urls", [])
+    if urls:
+        for item in urls:
+            time_str = item.get("time_short", "00:00")
+            raw_url = item.get("url", "")
+            # Shorten or clean URL format for terminal display
+            display_url = raw_url.replace("https://", "").replace("http://", "")
+            print(f"{time_str}  {display_url}")
+    else:
+        print("No browser activity found.")
+
 
 def collect(args):
     print("Initializing acquisition phase...")
