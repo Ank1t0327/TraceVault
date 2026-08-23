@@ -1,1 +1,3 @@
-# Initialize parsers module
+from .chromium import ChromiumParser
+
+__all__ = ["ChromiumParser"]
