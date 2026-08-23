@@ -64,4 +64,31 @@ def extract_urls_and_visits(conn):
         pass
     return records
 
+def extract_downloads(conn):
+    """Query Chromium History database for downloaded files."""
+    query = """
+    SELECT target_path, current_path, start_time, total_bytes, tab_url
+    FROM downloads
+    ORDER BY start_time ASC
+    """
+    downloads = []
+    try:
+        cursor = conn.cursor()
+        cursor.execute(query)
+        for row in cursor.fetchall():
+            dt = webkit_to_datetime(row["start_time"])
+            path = row["target_path"] or row["current_path"] or ""
+            downloads.append({
+                "path": path,
+                "filename": os.path.basename(path),
+                "size_bytes": row["total_bytes"],
+                "source_url": row["tab_url"],
+                "timestamp": dt,
+                "time_short": format_time_short(dt)
+            })
+    except sqlite3.Error:
+        pass
+    return downloads
+
+
 
