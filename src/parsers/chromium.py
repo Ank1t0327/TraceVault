@@ -39,3 +39,29 @@ def open_sqlite_readonly(db_path):
             shutil.rmtree(temp_dir, ignore_errors=True)
         return None, None
 
+def extract_urls_and_visits(conn):
+    """Query Chromium History database for visited URLs, titles, and timestamps."""
+    query = """
+    SELECT urls.url, urls.title, urls.visit_count, visits.visit_time
+    FROM visits
+    JOIN urls ON visits.url = urls.id
+    ORDER BY visits.visit_time ASC
+    """
+    records = []
+    try:
+        cursor = conn.cursor()
+        cursor.execute(query)
+        for row in cursor.fetchall():
+            dt = webkit_to_datetime(row["visit_time"])
+            records.append({
+                "url": row["url"],
+                "title": row["title"],
+                "visit_count": row["visit_count"],
+                "timestamp": dt,
+                "time_short": format_time_short(dt)
+            })
+    except sqlite3.Error:
+        pass
+    return records
+
+
