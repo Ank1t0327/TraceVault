@@ -120,6 +120,12 @@ def main():
     parser_record.add_argument("--description", required=True, help="Description of evidence")
     parser_record.set_defaults(func=record)
     
+    # Browser command
+    parser_browser = subparsers.add_parser("browser", help="Analyze Chromium browser history and activity")
+    parser_browser.add_argument("--path", help="Optional custom path to Chromium History database file")
+    parser_browser.set_defaults(func=browser_cmd)
+
+    
     args = parser.parse_args()
     
     if args.command:
