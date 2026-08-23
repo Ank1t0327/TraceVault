@@ -52,3 +52,11 @@ python tracevault.py report
 - Added detection for recently modified files and executables.
 - Built a suspicious filename detector handling known malware keywords and double extensions.
 - Added filtering support in `tracevault analyze --type <filter>` (e.g. `executable`, `suspicious`).
+
+## Day 4: Browser Forensics
+- Implemented Chromium browser history SQLite database parser (`ChromiumParser`).
+- WebKit/Chrome 64-bit microsecond timestamp decoder to UTC datetimes.
+- Safe read-only SQLite database connection handling for locked live browser files.
+- Extracted URLs, visit counts, visit timestamps, page titles, download records, and search activity.
+- Added `tracevault browser` CLI subcommand.
+
