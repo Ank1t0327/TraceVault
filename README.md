@@ -60,3 +60,13 @@ python tracevault.py report
 - Extracted URLs, visit counts, visit timestamps, page titles, download records, and search activity.
 - Added `tracevault browser` CLI subcommand.
 
+## Day 5: System & User Activity
+- Implemented Linux SSH authentication log parser (`AuthLogParser`) for `/var/log/auth.log` and `/var/log/secure`.
+- Extracted authentication timelines (failed SSH attempts, successful logins, invalid users, source IPs).
+- Added shell history parser for `.bash_history` and `.zsh_history`.
+- Added user account inspector parsing `/etc/passwd` to identify interactive users.
+- Added cron job artifact parser (`/etc/crontab`, `/etc/cron.d`, `/var/spool/cron/crontabs`).
+- Added running process enumerator scanning `/proc`.
+- Added `tracevault system` CLI subcommand to render Authentication Timelines and user activity.
+
+
