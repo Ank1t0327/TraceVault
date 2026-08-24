@@ -7,6 +7,32 @@ from src.utils.metadata import get_file_metadata
 from src.collectors.evidence_record import EvidenceRecord
 from src.analyzers.fs_analyzer import FileSystemAnalyzer
 from src.parsers.chromium import ChromiumParser
+from src.parsers.auth_log import AuthLogParser
+from src.parsers.user_activity import parse_shell_history, parse_user_accounts
+from src.parsers.system_info import parse_cron_jobs, parse_running_processes
+
+def system_cmd(args):
+    log_path = getattr(args, 'log', None)
+    parser = AuthLogParser(log_path=log_path)
+    events = parser.parse()
+
+    print("Authentication Timeline\n")
+    source_ips = set()
+    users = set()
+
+    for evt in events:
+        print(f"{evt['time']}  {evt['event']}")
+        if evt.get("ip"):
+            source_ips.add(evt["ip"])
+        if evt.get("user"):
+            users.add(evt["user"])
+
+    print("\nSource:")
+    print(", ".join(sorted(source_ips)) if source_ips else "Unknown")
+
+    print("\nUser:")
+    print(", ".join(sorted(users)) if users else "Unknown")
+
 
 def browser_cmd(args):
     path = getattr(args, 'path', None)
@@ -24,6 +50,7 @@ def browser_cmd(args):
             print(f"{time_str}  {display_url}")
     else:
         print("No browser activity found.")
+
 
 
 def collect(args):
@@ -124,6 +151,12 @@ def main():
     parser_browser = subparsers.add_parser("browser", help="Analyze Chromium browser history and activity")
     parser_browser.add_argument("--path", help="Optional custom path to Chromium History database file")
     parser_browser.set_defaults(func=browser_cmd)
+
+    # System command
+    parser_system = subparsers.add_parser("system", help="Analyze system/user activity and auth logs")
+    parser_system.add_argument("--log", help="Optional path to auth.log file")
+    parser_system.set_defaults(func=system_cmd)
+
 
     
     args = parser.parse_args()
