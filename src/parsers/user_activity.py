@@ -24,3 +24,26 @@ def parse_shell_history(history_file_path=None):
         except OSError:
             pass
     return commands
+
+def parse_user_accounts(passwd_file="/etc/passwd"):
+    """Parse Linux user accounts from /etc/passwd."""
+    users = []
+    if os.path.exists(passwd_file) and os.access(passwd_file, os.R_OK):
+        try:
+            with open(passwd_file, "r") as f:
+                for line in f:
+                    parts = line.strip().split(":")
+                    if len(parts) >= 7:
+                        username, _, uid, gid, comment, home, shell = parts[:7]
+                        users.append({
+                            "username": username,
+                            "uid": int(uid),
+                            "gid": int(gid),
+                            "home": home,
+                            "shell": shell,
+                            "is_interactive": shell.endswith("sh") and not shell.endswith("nologin")
+                        })
+        except (OSError, ValueError):
+            pass
+    return users
+
