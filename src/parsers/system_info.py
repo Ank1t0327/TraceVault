@@ -28,3 +28,28 @@ def parse_cron_jobs():
             except OSError:
                 pass
     return cron_jobs
+
+def parse_running_processes():
+    """Enumerate running processes from Linux /proc filesystem."""
+    processes = []
+    proc_dir = "/proc"
+    if not os.path.exists(proc_dir):
+        return processes
+
+    for entry in os.listdir(proc_dir):
+        if entry.isdigit():
+            pid = int(entry)
+            cmdline_path = os.path.join(proc_dir, entry, "cmdline")
+            if os.path.exists(cmdline_path) and os.access(cmdline_path, os.R_OK):
+                try:
+                    with open(cmdline_path, "rb") as f:
+                        content = f.read().replace(b'\x00', b' ').decode('utf-8', errors='ignore').strip()
+                        if content:
+                            processes.append({
+                                "pid": pid,
+                                "cmdline": content
+                            })
+                except OSError:
+                    pass
+    return processes
+
