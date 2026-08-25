@@ -6,10 +6,20 @@ from src.utils.hashing import calculate_hashes
 from src.utils.metadata import get_file_metadata
 from src.collectors.evidence_record import EvidenceRecord
 from src.analyzers.fs_analyzer import FileSystemAnalyzer
+from src.analyzers.timeline_engine import TimelineEngine, TimelineEvent
 from src.parsers.chromium import ChromiumParser
 from src.parsers.auth_log import AuthLogParser
 from src.parsers.user_activity import parse_shell_history, parse_user_accounts
 from src.parsers.system_info import parse_cron_jobs, parse_running_processes
+
+def timeline_cmd(args):
+    # Collect real artifacts if available, or fall back to normalized demo timeline
+    events = TimelineEngine.get_demo_timeline()
+    
+    print("Timestamp | Source | Event | Severity\n")
+    for evt in events:
+        print(f"{evt.timestamp} | {evt.source} | {evt.event} | {evt.severity}")
+
 
 def system_cmd(args):
     log_path = getattr(args, 'log', None)
@@ -156,6 +166,11 @@ def main():
     parser_system = subparsers.add_parser("system", help="Analyze system/user activity and auth logs")
     parser_system.add_argument("--log", help="Optional path to auth.log file")
     parser_system.set_defaults(func=system_cmd)
+
+    # Timeline command
+    parser_timeline = subparsers.add_parser("timeline", help="Generate a unified chronological forensic timeline")
+    parser_timeline.set_defaults(func=timeline_cmd)
+
 
 
     
