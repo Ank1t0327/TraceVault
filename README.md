@@ -75,6 +75,3 @@ python tracevault.py report
 - Added heuristic severity assignment (`INFO`, `LOW`, `MEDIUM`, `HIGH`, `CRITICAL`).
 - Implemented chronological event sorting mechanism.
 - Added `tracevault timeline` CLI subcommand to allow investigators to reconstruct exact incident sequences.
-
-
-
