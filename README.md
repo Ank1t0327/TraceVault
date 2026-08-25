@@ -69,4 +69,12 @@ python tracevault.py report
 - Added running process enumerator scanning `/proc`.
 - Added `tracevault system` CLI subcommand to render Authentication Timelines and user activity.
 
+## Day 6: Timeline Engine
+- Implemented `TimelineEngine` (`src/analyzers/timeline_engine.py`) to unify multi-source forensic artifacts into a common schema: `Timestamp | Source | Event | Severity`.
+- Added automated event normalizers for `auth.log`, `browser`, `filesystem`, and process execution events.
+- Added heuristic severity assignment (`INFO`, `LOW`, `MEDIUM`, `HIGH`, `CRITICAL`).
+- Implemented chronological event sorting mechanism.
+- Added `tracevault timeline` CLI subcommand to allow investigators to reconstruct exact incident sequences.
+
+
 
