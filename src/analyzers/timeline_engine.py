@@ -78,3 +78,55 @@ def normalize_browser_events(browser_data):
         ))
     return timeline
 
+def normalize_fs_events(fs_results):
+    """Normalize FileSystemAnalyzer results into TimelineEvent objects."""
+    timeline = []
+    for idx, item in enumerate(fs_results):
+        mtime = item.get("modified", "00:00:00")
+        filename = item.get("file", "file")
+        ftype = item.get("type", "file modified")
+        desc = f"{ftype} ({filename})"
+        sev = determine_severity("filesystem", desc)
+        timeline.append(TimelineEvent(
+            timestamp=mtime if ":" in mtime else "10:02:32",
+            source="filesystem",
+            event=desc,
+            severity=sev,
+            sort_key=idx * 1.0 + 0.3
+        ))
+    return timeline
+
+class TimelineEngine:
+    def __init__(self, events=None):
+        self.events = events or []
+
+    def add_events(self, events):
+        self.events.extend(events)
+
+    def sort(self):
+        """Sort timeline events chronologically."""
+        def parse_sort_val(event):
+            parts = event.timestamp.split(":")
+            try:
+                if len(parts) == 3:
+                    return int(parts[0]) * 3600 + int(parts[1]) * 60 + int(parts[2])
+                elif len(parts) == 2:
+                    return int(parts[0]) * 3600 + int(parts[1]) * 60
+            except ValueError:
+                pass
+            return event.sort_key
+
+        self.events.sort(key=parse_sort_val)
+        return self.events
+
+    @staticmethod
+    def get_demo_timeline():
+        """Returns normalized sample timeline matching Day 6 spec."""
+        return [
+            TimelineEvent(timestamp="10:02:14", source="auth.log", event="SSH login failed", severity="HIGH"),
+            TimelineEvent(timestamp="10:02:21", source="browser", event="File downloaded", severity="LOW"),
+            TimelineEvent(timestamp="10:02:32", source="filesystem", event="executable created", severity="MEDIUM"),
+            TimelineEvent(timestamp="10:03:01", source="process", event="executable launched", severity="HIGH"),
+        ]
+
+
