@@ -75,3 +75,10 @@ python tracevault.py report
 - Added heuristic severity assignment (`INFO`, `LOW`, `MEDIUM`, `HIGH`, `CRITICAL`).
 - Implemented chronological event sorting mechanism.
 - Added `tracevault timeline` CLI subcommand to allow investigators to reconstruct exact incident sequences.
+
+## Day 7: Indicators of Compromise (IOCs)
+- Implemented `IOCDetector` (`src/analyzers/ioc_detector.py`) with a lightweight Threat Intelligence engine.
+- Added file & hash IOC matching for known malware hashes (MD5/SHA-256), executables in temporary paths (`/tmp`, `/dev/shm`), and double extension obfuscation.
+- Added network IOC detection for brute force SSH IPs and suspicious URLs.
+- Added system IOC detection for hacking processes (`nc`, `nmap`, `mimikatz`), backdoor root UID 0 accounts, and cron job persistence payloads.
+- Added `tracevault ioc` CLI subcommand outputting structured IOC records (`Type`, `Value`, `Risk`, `Reason`).
