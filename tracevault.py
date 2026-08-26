@@ -7,10 +7,18 @@ from src.utils.metadata import get_file_metadata
 from src.collectors.evidence_record import EvidenceRecord
 from src.analyzers.fs_analyzer import FileSystemAnalyzer
 from src.analyzers.timeline_engine import TimelineEngine, TimelineEvent
+from src.analyzers.ioc_detector import IOCDetector, IOC
 from src.parsers.chromium import ChromiumParser
 from src.parsers.auth_log import AuthLogParser
 from src.parsers.user_activity import parse_shell_history, parse_user_accounts
 from src.parsers.system_info import parse_cron_jobs, parse_running_processes
+
+def ioc_cmd(args):
+    detector = IOCDetector()
+    iocs = detector.scan()
+    for item in iocs:
+        print(item.display())
+
 
 def timeline_cmd(args):
     # Collect real artifacts if available, or fall back to normalized demo timeline
@@ -170,6 +178,11 @@ def main():
     # Timeline command
     parser_timeline = subparsers.add_parser("timeline", help="Generate a unified chronological forensic timeline")
     parser_timeline.set_defaults(func=timeline_cmd)
+
+    # IOC command
+    parser_ioc = subparsers.add_parser("ioc", help="Detect Indicators of Compromise (IOCs) across evidence artifacts")
+    parser_ioc.set_defaults(func=ioc_cmd)
+
 
 
 
