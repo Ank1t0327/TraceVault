@@ -79,3 +79,41 @@ def check_file_iocs(file_path, file_hashes=None):
 
     return iocs
 
+def check_network_iocs(ip_events, urls=None):
+    """Analyze IP addresses and URLs for network IOCs."""
+    iocs = []
+    # Count failed auth attempts per IP
+    ip_failed_counts = {}
+    for evt in ip_events:
+        if "FAILED" in evt.get("event", "") and evt.get("ip"):
+            ip = evt["ip"]
+            ip_failed_counts[ip] = ip_failed_counts.get(ip, 0) + 1
+
+    for ip, count in ip_failed_counts.items():
+        if count >= 2:
+            iocs.append(IOC(
+                type="IP",
+                value=ip,
+                risk="HIGH",
+                source="auth.log",
+                confidence="HIGH",
+                description="Brute force authentication source",
+                reason=f"repeated authentication attempts ({count} failures)"
+            ))
+
+    if urls:
+        for u in urls:
+            raw_url = u.get("url", "") if isinstance(u, dict) else str(u)
+            if "suspicious" in raw_url or "malware" in raw_url or "exploit" in raw_url:
+                iocs.append(IOC(
+                    type="URL",
+                    value=raw_url,
+                    risk="HIGH",
+                    source="browser",
+                    confidence="MEDIUM",
+                    description="Malicious web navigation",
+                    reason="URL matched suspicious keyword pattern"
+                ))
+    return iocs
+
+
