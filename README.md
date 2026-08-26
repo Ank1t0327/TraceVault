@@ -82,3 +82,5 @@ python tracevault.py report
 - Added network IOC detection for brute force SSH IPs and suspicious URLs.
 - Added system IOC detection for hacking processes (`nc`, `nmap`, `mimikatz`), backdoor root UID 0 accounts, and cron job persistence payloads.
 - Added `tracevault ioc` CLI subcommand outputting structured IOC records (`Type`, `Value`, `Risk`, `Reason`).
+
+## Day 8: 
