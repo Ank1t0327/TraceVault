@@ -83,4 +83,9 @@ python tracevault.py report
 - Added system IOC detection for hacking processes (`nc`, `nmap`, `mimikatz`), backdoor root UID 0 accounts, and cron job persistence payloads.
 - Added `tracevault ioc` CLI subcommand outputting structured IOC records (`Type`, `Value`, `Risk`, `Reason`).
 
-## Day 8: 
+## Day 8: Investigation & Correlation Engine
+- Implemented `CorrelationEngine` (`src/analyzers/correlation_engine.py`) to connect isolated forensic findings into structured attack chains.
+- Created attack graph sequence visualization (e.g. `SSH Brute Force → Successful Login → Suspicious Download → Executable Created → Process Started`).
+- Built cumulative Risk Scoring algorithm (0-100) with severity ratings (`LOW`, `MEDIUM`, `HIGH`, `CRITICAL`).
+- Added contributing risk reason tracking (`+ Multiple failed logins`, `+ Suspicious download`, `+ Executable execution`, `+ Persistence detected`).
+- Added `tracevault correlate` CLI subcommand.
