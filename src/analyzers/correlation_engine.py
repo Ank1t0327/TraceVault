@@ -10,13 +10,14 @@ class CorrelationNode:
 
 # Risk Weights for findings
 RISK_WEIGHTS = {
-    "FAILED_AUTH_SERIES": 15,
-    "SUCCESSFUL_LOGIN_AFTER_BRUTE": 25,
+    "FAILED_AUTH_SERIES": 25,
+    "SUCCESSFUL_LOGIN_AFTER_BRUTE": 22,
     "SUSPICIOUS_DOWNLOAD": 20,
     "EXECUTABLE_CREATED": 20,
     "MALICIOUS_PROCESS": 25,
-    "PERSISTENCE_ADDED": 15
+    "PERSISTENCE_ADDED": 22
 }
+
 
 def calculate_risk_score(reasons: List[str]) -> tuple[int, str]:
     """Calculate cumulative risk score (0-100) and severity label."""
