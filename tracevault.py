@@ -8,10 +8,16 @@ from src.collectors.evidence_record import EvidenceRecord
 from src.analyzers.fs_analyzer import FileSystemAnalyzer
 from src.analyzers.timeline_engine import TimelineEngine, TimelineEvent
 from src.analyzers.ioc_detector import IOCDetector, IOC
+from src.analyzers.correlation_engine import CorrelationEngine
 from src.parsers.chromium import ChromiumParser
 from src.parsers.auth_log import AuthLogParser
 from src.parsers.user_activity import parse_shell_history, parse_user_accounts
 from src.parsers.system_info import parse_cron_jobs, parse_running_processes
+
+def correlate_cmd(args):
+    engine = CorrelationEngine()
+    print(engine.display())
+
 
 def ioc_cmd(args):
     detector = IOCDetector()
@@ -182,6 +188,11 @@ def main():
     # IOC command
     parser_ioc = subparsers.add_parser("ioc", help="Detect Indicators of Compromise (IOCs) across evidence artifacts")
     parser_ioc.set_defaults(func=ioc_cmd)
+
+    # Correlate command
+    parser_correlate = subparsers.add_parser("correlate", help="Correlate evidence findings into attack chains and risk scores")
+    parser_correlate.set_defaults(func=correlate_cmd)
+
 
 
 
