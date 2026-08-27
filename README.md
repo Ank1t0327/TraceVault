@@ -89,3 +89,5 @@ python tracevault.py report
 - Built cumulative Risk Scoring algorithm (0-100) with severity ratings (`LOW`, `MEDIUM`, `HIGH`, `CRITICAL`).
 - Added contributing risk reason tracking (`+ Multiple failed logins`, `+ Suspicious download`, `+ Executable execution`, `+ Persistence detected`).
 - Added `tracevault correlate` CLI subcommand.
+
+## Day 9 
