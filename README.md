@@ -90,4 +90,7 @@ python tracevault.py report
 - Added contributing risk reason tracking (`+ Multiple failed logins`, `+ Suspicious download`, `+ Executable execution`, `+ Persistence detected`).
 - Added `tracevault correlate` CLI subcommand.
 
-## Day 9 
+## Day 9: Forensic Report Generator
+- Implemented `ReportGenerator` (`src/reporting/report_generator.py`) supporting structured JSON and glassmorphic dark-theme HTML report exports.
+- Included 6 core report sections: Case Information, Evidence Integrity (SHA-256 & Metadata), Critical Findings Breakdown (Critical, High, Medium, Low), Chronological Timeline, Indicators of Compromise (IOCs), and Executive Investigation Summary.
+- Added `tracevault report` CLI subcommand supporting `--format` (`html`, `json`, `all`), `--case-id`, and `--investigator` flags.
