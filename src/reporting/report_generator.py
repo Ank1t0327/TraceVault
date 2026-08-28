@@ -66,6 +66,42 @@ class ReportData:
         "downloaded an unverified payload (/tmp/payload.exe), and initiated a reverse shell process (PID 4120)."
     )
 
+import json
+import os
+
+class ReportGenerator:
+    def __init__(self, data: ReportData = None):
+        self.data = data or ReportData()
+
+    def to_dict(self) -> Dict[str, Any]:
+
+        return {
+            "case_information": {
+                "case_id": self.data.case_id,
+                "investigator": self.data.investigator,
+                "evidence": self.data.evidence_name,
+                "date": self.data.date
+            },
+            "evidence_integrity": {
+                "sha256": self.data.sha256,
+                "status": self.data.integrity_status,
+                "metadata": self.data.metadata
+            },
+            "findings": self.data.findings,
+            "timeline": self.data.timeline,
+            "iocs": self.data.iocs,
+            "investigation_summary": self.data.summary
+        }
+
+    def generate_json(self, output_path: str = "reports/report.json") -> str:
+        """Export forensic investigation report as formatted JSON."""
+        os.makedirs(os.path.dirname(output_path), exist_ok=True)
+        report_dict = self.to_dict()
+        with open(output_path, "w", encoding="utf-8") as f:
+            json.dump(report_dict, f, indent=2)
+        return output_path
+
+
 
 
 
