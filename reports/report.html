@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TraceVault Forensic Report - CASE-2026-0801</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #0f172a;
+            color: #f8fafc;
+            margin: 0;
+            padding: 40px 20px;
+        }
+        .container {
+            max-width: 960px;
+            margin: 0 auto;
+            background: #1e293b;
+            border-radius: 12px;
+            padding: 32px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
+            border: 1px solid #334155;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #334155;
+            padding-bottom: 20px;
+            margin-bottom: 24px;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 26px;
+            color: #38bdf8;
+        }
+        .section {
+            margin-bottom: 32px;
+        }
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            border-bottom: 1px solid #334155;
+            padding-bottom: 8px;
+            margin-bottom: 16px;
+        }
+        .card {
+            background: #0f172a;
+            border-radius: 8px;
+            padding: 16px;
+            border: 1px solid #334155;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+        th {
+            background: #0f172a;
+            color: #94a3b8;
+            padding: 10px;
+            font-size: 13px;
+            text-transform: uppercase;
+        }
+        .summary-box {
+            background: rgba(56, 189, 248, 0.1);
+            border-left: 4px solid #38bdf8;
+            padding: 16px;
+            border-radius: 4px;
+            color: #e2e8f0;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div>
+                <h1>TraceVault Forensic Investigation Report</h1>
+                <p style="color:#94a3b8; margin: 4px 0 0 0;">Case ID: <strong>CASE-2026-0801</strong></p>
+            </div>
+            <div style="text-align:right; color:#94a3b8; font-size:14px;">
+                <p style="margin:0;">Investigator: <strong>Lead Forensic Analyst</strong></p>
+                <p style="margin:4px 0 0 0;">Date: 2026-08-28 23:28:17 UTC</p>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">1. Executive Summary</div>
+            <div class="summary-box">
+                Analysis identified a sequence of failed authentication attempts followed by successful access and execution of a suspicious binary. The adversary gained access via SSH brute force from IP 192.168.1.105, downloaded an unverified payload (/tmp/payload.exe), and initiated a reverse shell process (PID 4120).
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">2. Evidence Integrity</div>
+            <div class="card">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+                    <span style="color:#94a3b8;">SHA-256 Digest:</span>
+                    <span style="font-family:monospace; color:#4ade80;">8b7c4a1e99fa3829103bc492817491fa8b7c4a1e99fa3829103bc492817491fa</span>
+                </div>
+                <div style="color:#4ade80; font-weight:bold; margin-bottom:12px;">✓ VERIFIED (UNTAMPERED)</div>
+                <div style="display:flex; justify-content:space-between; border-bottom:1px solid #374151; padding:6px 0;"><span style="color:#9ca3af;">Filename:</span><span style="color:#f3f4f6; font-family:monospace;">disk_image.dd</span></div><div style="display:flex; justify-content:space-between; border-bottom:1px solid #374151; padding:6px 0;"><span style="color:#9ca3af;">Size:</span><span style="color:#f3f4f6; font-family:monospace;">4,294,967,296 bytes (4.0 GB)</span></div><div style="display:flex; justify-content:space-between; border-bottom:1px solid #374151; padding:6px 0;"><span style="color:#9ca3af;">File Type:</span><span style="color:#f3f4f6; font-family:monospace;">RAW Disk Image / ELF Executable Container</span></div><div style="display:flex; justify-content:space-between; border-bottom:1px solid #374151; padding:6px 0;"><span style="color:#9ca3af;">Created:</span><span style="color:#f3f4f6; font-family:monospace;">2026-08-25 10:00:00 UTC</span></div><div style="display:flex; justify-content:space-between; border-bottom:1px solid #374151; padding:6px 0;"><span style="color:#9ca3af;">Modified:</span><span style="color:#f3f4f6; font-family:monospace;">2026-08-25 10:02:32 UTC</span></div><div style="display:flex; justify-content:space-between; border-bottom:1px solid #374151; padding:6px 0;"><span style="color:#9ca3af;">Accessed:</span><span style="color:#f3f4f6; font-family:monospace;">2026-08-25 10:03:01 UTC</span></div>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">3. Critical Findings & Severity Breakdown</div>
+            <div class="card">
+                <div style="margin-bottom:12px;"><span style="background:#ef4444; color:#fff; padding:3px 8px; border-radius:4px; font-weight:bold; font-size:12px;">CRITICAL</span><ul style="margin-top:6px; color:#d1d5db;"><li style="margin-bottom:4px;">Reverse shell process launched (PID 4120: nc -e /bin/bash)</li><li style="margin-bottom:4px;">Backdoor user account created with UID 0 privileges</li></ul></div><div style="margin-bottom:12px;"><span style="background:#f97316; color:#fff; padding:3px 8px; border-radius:4px; font-weight:bold; font-size:12px;">HIGH</span><ul style="margin-top:6px; color:#d1d5db;"><li style="margin-bottom:4px;">SSH Brute Force attack detected from IP 192.168.1.105</li><li style="margin-bottom:4px;">Suspicious executable file created in /tmp directory</li></ul></div><div style="margin-bottom:12px;"><span style="background:#eab308; color:#fff; padding:3px 8px; border-radius:4px; font-weight:bold; font-size:12px;">MEDIUM</span><ul style="margin-top:6px; color:#d1d5db;"><li style="margin-bottom:4px;">Modification of scheduled system crontab tasks</li><li style="margin-bottom:4px;">Execution of downloaded shell payload script</li></ul></div><div style="margin-bottom:12px;"><span style="background:#3b82f6; color:#fff; padding:3px 8px; border-radius:4px; font-weight:bold; font-size:12px;">LOW</span><ul style="margin-top:6px; color:#d1d5db;"><li style="margin-bottom:4px;">File downloaded from untrusted web server</li><li style="margin-bottom:4px;">Multiple interactive SSH session terminations</li></ul></div>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">4. Chronological Timeline</div>
+            <div class="card" style="padding:0; overflow:hidden;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Timestamp</th>
+                            <th>Event Description</th>
+                            <th>Source</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        
+            <tr style="border-bottom: 1px solid #374151;">
+                <td style="padding: 10px; color: #9ca3af;">10:02:14 UTC</td>
+                <td style="padding: 10px; color: #f3f4f6;">SSH authentication failure for user admin</td>
+                <td style="padding: 10px; color: #60a5fa;"><code style="background:#1f2937; padding:2px 6px; border-radius:3px;">auth.log</code></td>
+            </tr>
+            <tr style="border-bottom: 1px solid #374151;">
+                <td style="padding: 10px; color: #9ca3af;">10:02:18 UTC</td>
+                <td style="padding: 10px; color: #f3f4f6;">SSH authentication failure for user admin</td>
+                <td style="padding: 10px; color: #60a5fa;"><code style="background:#1f2937; padding:2px 6px; border-radius:3px;">auth.log</code></td>
+            </tr>
+            <tr style="border-bottom: 1px solid #374151;">
+                <td style="padding: 10px; color: #9ca3af;">10:02:21 UTC</td>
+                <td style="padding: 10px; color: #f3f4f6;">Successful SSH authentication for user admin</td>
+                <td style="padding: 10px; color: #60a5fa;"><code style="background:#1f2937; padding:2px 6px; border-radius:3px;">auth.log</code></td>
+            </tr>
+            <tr style="border-bottom: 1px solid #374151;">
+                <td style="padding: 10px; color: #9ca3af;">10:02:30 UTC</td>
+                <td style="padding: 10px; color: #f3f4f6;">File payload.exe downloaded via Chromium</td>
+                <td style="padding: 10px; color: #60a5fa;"><code style="background:#1f2937; padding:2px 6px; border-radius:3px;">browser</code></td>
+            </tr>
+            <tr style="border-bottom: 1px solid #374151;">
+                <td style="padding: 10px; color: #9ca3af;">10:02:32 UTC</td>
+                <td style="padding: 10px; color: #f3f4f6;">Executable /tmp/payload.exe created</td>
+                <td style="padding: 10px; color: #60a5fa;"><code style="background:#1f2937; padding:2px 6px; border-radius:3px;">filesystem</code></td>
+            </tr>
+            <tr style="border-bottom: 1px solid #374151;">
+                <td style="padding: 10px; color: #9ca3af;">10:03:01 UTC</td>
+                <td style="padding: 10px; color: #f3f4f6;">Process PID 4120 (/tmp/payload.exe) executed</td>
+                <td style="padding: 10px; color: #60a5fa;"><code style="background:#1f2937; padding:2px 6px; border-radius:3px;">proc</code></td>
+            </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">5. Indicators of Compromise (IOCs)</div>
+            <div class="card" style="padding:0; overflow:hidden;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Type</th>
+                            <th>Value / Indicator</th>
+                            <th>Risk Level</th>
+                            <th>Detection Reason</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        
+            <tr style="border-bottom: 1px solid #374151;">
+                <td style="padding: 10px; font-weight: bold; color: #f3f4f6;">IP</td>
+                <td style="padding: 10px; color: #38bdf8; font-family: monospace;">192.168.1.105</td>
+                <td style="padding: 10px;"><span style="color:#f97316; font-weight:bold;">HIGH</span></td>
+                <td style="padding: 10px; color: #9ca3af;">SSH Brute Force Source</td>
+            </tr>
+            <tr style="border-bottom: 1px solid #374151;">
+                <td style="padding: 10px; font-weight: bold; color: #f3f4f6;">Domain</td>
+                <td style="padding: 10px; color: #38bdf8; font-family: monospace;">malicious-c2-server.com</td>
+                <td style="padding: 10px;"><span style="color:#ef4444; font-weight:bold;">CRITICAL</span></td>
+                <td style="padding: 10px; color: #9ca3af;">C2 Command & Control</td>
+            </tr>
+            <tr style="border-bottom: 1px solid #374151;">
+                <td style="padding: 10px; font-weight: bold; color: #f3f4f6;">Hash</td>
+                <td style="padding: 10px; color: #38bdf8; font-family: monospace;">44d88612fea8a8f36de82e1278abb02f</td>
+                <td style="padding: 10px;"><span style="color:#f97316; font-weight:bold;">HIGH</span></td>
+                <td style="padding: 10px; color: #9ca3af;">Known Malware MD5</td>
+            </tr>
+            <tr style="border-bottom: 1px solid #374151;">
+                <td style="padding: 10px; font-weight: bold; color: #f3f4f6;">File</td>
+                <td style="padding: 10px; color: #38bdf8; font-family: monospace;">/tmp/payload.exe</td>
+                <td style="padding: 10px;"><span style="color:#f97316; font-weight:bold;">HIGH</span></td>
+                <td style="padding: 10px; color: #9ca3af;">Unusual Executable Directory</td>
+            </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
