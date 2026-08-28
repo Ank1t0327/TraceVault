@@ -96,9 +96,24 @@ def analyze(args):
         print(f"    Modified: {res['modified']}\n")
 
 
+from src.reporting.report_generator import ReportGenerator, ReportData
+
 def report(args):
-    print("Initializing reporting phase...")
-    print("Generating comprehensive forensics report.")
+    print("Initializing TraceVault Report Generator...")
+    case_id = getattr(args, 'case_id', None) or "CASE-2026-0801"
+    investigator = getattr(args, 'investigator', None) or "Lead Forensic Analyst"
+    fmt = getattr(args, 'format', 'all')
+    
+    data = ReportData(case_id=case_id, investigator=investigator)
+    generator = ReportGenerator(data)
+    
+    if fmt in ['html', 'all']:
+        html_file = generator.generate_html("reports/report.html")
+        print(f"✓ Generated HTML Forensic Report: {html_file}")
+    if fmt in ['json', 'all']:
+        json_file = generator.generate_json("reports/report.json")
+        print(f"✓ Generated JSON Forensic Report: {json_file}")
+
 
 def verify(args):
     print(f"Evidence: {os.path.basename(args.file)}\n")
@@ -155,7 +170,11 @@ def main():
     
     # Report command
     parser_report = subparsers.add_parser("report", help="Generate forensic reports")
+    parser_report.add_argument("--format", choices=["html", "json", "all"], default="all", help="Output format (html, json, all)")
+    parser_report.add_argument("--case-id", help="Case identification string")
+    parser_report.add_argument("--investigator", help="Lead investigator name")
     parser_report.set_defaults(func=report)
+
     
     # Verify command
     parser_verify = subparsers.add_parser("verify", help="Verify evidence integrity and hashes")
