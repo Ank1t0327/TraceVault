@@ -51,5 +51,14 @@ class ReportData:
         {"timestamp": "10:03:01 UTC", "event": "Process PID 4120 (/tmp/payload.exe) executed", "source": "proc"}
     ])
 
+    # Indicators of Compromise (IOCs)
+    iocs: List[Dict[str, str]] = field(default_factory=lambda: [
+        {"type": "IP", "value": "192.168.1.105", "risk": "HIGH", "reason": "SSH Brute Force Source"},
+        {"type": "Domain", "value": "malicious-c2-server.com", "risk": "CRITICAL", "reason": "C2 Command & Control"},
+        {"type": "Hash", "value": "44d88612fea8a8f36de82e1278abb02f", "risk": "HIGH", "reason": "Known Malware MD5"},
+        {"type": "File", "value": "/tmp/payload.exe", "risk": "HIGH", "reason": "Unusual Executable Directory"}
+    ])
+
+
 
 
