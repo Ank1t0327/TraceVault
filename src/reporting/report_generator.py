@@ -59,6 +59,14 @@ class ReportData:
         {"type": "File", "value": "/tmp/payload.exe", "risk": "HIGH", "reason": "Unusual Executable Directory"}
     ])
 
+    # Executive Investigation Summary
+    summary: str = (
+        "Analysis identified a sequence of failed authentication attempts followed by successful access "
+        "and execution of a suspicious binary. The adversary gained access via SSH brute force from IP 192.168.1.105, "
+        "downloaded an unverified payload (/tmp/payload.exe), and initiated a reverse shell process (PID 4120)."
+    )
+
+
 
 
 
