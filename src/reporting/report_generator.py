@@ -41,4 +41,15 @@ class ReportData:
         ]
     })
 
+    # Timeline Events
+    timeline: List[Dict[str, str]] = field(default_factory=lambda: [
+        {"timestamp": "10:02:14 UTC", "event": "SSH authentication failure for user admin", "source": "auth.log"},
+        {"timestamp": "10:02:18 UTC", "event": "SSH authentication failure for user admin", "source": "auth.log"},
+        {"timestamp": "10:02:21 UTC", "event": "Successful SSH authentication for user admin", "source": "auth.log"},
+        {"timestamp": "10:02:30 UTC", "event": "File payload.exe downloaded via Chromium", "source": "browser"},
+        {"timestamp": "10:02:32 UTC", "event": "Executable /tmp/payload.exe created", "source": "filesystem"},
+        {"timestamp": "10:03:01 UTC", "event": "Process PID 4120 (/tmp/payload.exe) executed", "source": "proc"}
+    ])
+
+
 
