@@ -21,3 +21,24 @@ class ReportData:
     })
     integrity_status: str = "✓ VERIFIED (UNTAMPERED)"
 
+    # Findings categorized by Severity
+    findings: Dict[str, List[str]] = field(default_factory=lambda: {
+        "CRITICAL": [
+            "Reverse shell process launched (PID 4120: nc -e /bin/bash)",
+            "Backdoor user account created with UID 0 privileges"
+        ],
+        "HIGH": [
+            "SSH Brute Force attack detected from IP 192.168.1.105",
+            "Suspicious executable file created in /tmp directory"
+        ],
+        "MEDIUM": [
+            "Modification of scheduled system crontab tasks",
+            "Execution of downloaded shell payload script"
+        ],
+        "LOW": [
+            "File downloaded from untrusted web server",
+            "Multiple interactive SSH session terminations"
+        ]
+    })
+
+
