@@ -1,96 +1,190 @@
-# TraceVault
+# TraceVault — Digital Forensics & Incident Correlation Engine
 
-TraceVault is a foundational Digital Forensics toolkit.
+TraceVault is a modular, high-performance Digital Forensics and Incident Investigation Engine. It transforms isolated system artifacts—such as authentication logs, browser history, file system modifications, and running processes—into structured attack chain narratives, automated risk scores, and executive forensic reports.
 
-## Digital Forensics Core Concepts
+---
 
-Digital forensics involves the recovery and investigation of material found in digital devices, often in relation to computer crime.
+## 📌 Problem Statement
+Digital forensics investigations often require analyzing disparate artifacts across multiple system layers. Security analysts face significant challenges manually correlating isolated log entries (e.g., SSH brute force attempts in `/var/log/auth.log`, file downloads in Chromium history, executable creation in `/tmp`, and reverse shell process execution). Without automated correlation:
+- Critical attack vectors remain hidden in noise.
+- Timeline reconstruction is error-prone and time-consuming.
+- Evidence integrity and chain of custody risk compromise.
 
-### Evidence vs Artifacts
-- **Evidence**: Data or physical items that can be presented in court to prove or disprove a fact.
-- **Artifacts**: Objects or data created by the operating system or applications (e.g., registry keys, log files) that hold forensic value but may not directly prove a crime without context.
+**TraceVault solves this problem** by providing an end-to-end automated pipeline that ingests raw evidence, verifies cryptographic hashes, extracts artifacts, scans for threat intelligence IOCs, correlates multi-stage attack chains, calculates cumulative risk scores, and exports executive-ready HTML and JSON reports.
 
-### The Forensics Process
-1. **Acquisition**: The process of creating an exact duplicate (forensic image) of the original digital media.
-2. **Preservation**: Ensuring the data is not altered or destroyed. This involves write-blockers and secure storage.
-3. **Analysis**: Examining the acquired data to extract relevant information, using tools to parse artifacts and reconstruct events.
-4. **Reporting**: Documenting the findings in a clear, concise, and reproducible manner.
+---
 
-### Hashing
-Hashing (e.g., MD5, SHA-256) is used to verify data integrity. It acts as a digital fingerprint for files. If a file changes, its hash changes. We use hashing to prove that evidence has not been tampered with since acquisition.
+## 🏗️ System Architecture
 
-### Chain of Custody
-A chronological documentation or paper trail that records the sequence of custody, control, transfer, analysis, and disposition of evidence. It is critical for the admissibility of evidence in court.
-
-## Project Structure
-- `src/collectors/`: Modules for acquiring data.
-- `src/analyzers/`: Modules for analyzing acquired data.
-- `src/parsers/`: Modules for parsing specific artifacts.
-- `src/utils/`: Helper functions (hashing, logging).
-- `src/reporting/`: Modules for generating reports.
-- `evidence/`: Directory to store acquired evidence.
-- `reports/`: Directory to store generated reports.
-- `tests/`: Unit tests.
-
-## Usage
-```bash
-python tracevault.py --help
-python tracevault.py collect
-python tracevault.py analyze
-python tracevault.py report
+```text
+                           TraceVault
+                               │
+               ┌───────────────┴───────────────┐
+               ↓                               ↓
+           Evidence                        Artifacts
+       (Images/Files)               (Logs/Browser/Processes)
+               │                               │
+               └───────────────┬───────────────┘
+                               ↓
+                       Artifact Analysis
+               (FileSystem / Chromium / Auth)
+                               ↓
+                         IOC Detection
+               (Hashes / IPs / Domains / Proc)
+                               ↓
+                         Event Correlation
+               (Attack Chain Sequence Generator)
+                               ↓
+                      Timeline Reconstruction
+             (Unified Chronological Normalization)
+                               ↓
+                      Risk Scoring Algorithm
+               (0-100 Score & Severity Rating)
+                               ↓
+                    Automated Report Generator
+                     (reports/report.html & json)
 ```
 
-## Day 2: Evidence Integrity
-- Implemented file hashing (SHA-256, SHA-1, MD5).
-- Added metadata collection (Size, timestamps, types).
-- Introduced Evidence Record generation.
-- Added `verify` and `record` commands to CLI.
+---
 
-## Day 3: File System Analysis
-- Implemented `FileSystemAnalyzer` for automated directory traversal.
-- Added analysis capabilities for identifying hidden files and large files.
-- Added detection for recently modified files and executables.
-- Built a suspicious filename detector handling known malware keywords and double extensions.
-- Added filtering support in `tracevault analyze --type <filter>` (e.g. `executable`, `suspicious`).
+## ⚡ Core Features & 10-Day Evolution
 
-## Day 4: Browser Forensics
-- Implemented Chromium browser history SQLite database parser (`ChromiumParser`).
-- WebKit/Chrome 64-bit microsecond timestamp decoder to UTC datetimes.
-- Safe read-only SQLite database connection handling for locked live browser files.
-- Extracted URLs, visit counts, visit timestamps, page titles, download records, and search activity.
-- Added `tracevault browser` CLI subcommand.
+- **Day 1 — Foundation & Structure**: Built modular project architecture separating collectors, parsers, analyzers, utils, and reporting.
+- **Day 2 — Evidence Integrity & Chain of Custody**: Cryptographic verification via multi-algorithm hashing (SHA-256, SHA-1, MD5), file metadata extraction, and JSON evidence record creation.
+- **Day 3 — File System Analysis**: `FileSystemAnalyzer` for automated directory traversal, identifying hidden files, large files, recent modifications, executables, and suspicious filename extensions (e.g., double extensions, malware keywords).
+- **Day 4 — Browser Forensics**: `ChromiumParser` to read SQLite history databases in read-only safe mode, converting WebKit microsecond timestamps into UTC datetime objects to extract visited URLs, search queries, and download logs.
+- **Day 5 — System & User Activity**: Linux authentication log parsing (`/var/log/auth.log`), user account inspection (`/etc/passwd`), shell history (`.bash_history`), cron job persistence detection, and running process enumeration (`/proc`).
+- **Day 6 — Timeline Engine**: Unified event schema (`Timestamp | Source | Event | Severity`), severity heuristics (`INFO` to `CRITICAL`), chronological sorting, and event deduplication.
+- **Day 7 — Threat Intelligence & IOC Detection**: `IOCDetector` scanning system, process, network, and file artifacts against threat indicators (known malware hashes, double extensions, suspicious network IPs, backdoor root UID 0 accounts).
+- **Day 8 — Investigation & Correlation Engine**: Automated attack chain reconstruction (`SSH Brute Force → Successful Login → Suspicious Download → Executable Created → Process Started`), cumulative risk scoring algorithm (0-100), and contributing risk reason tracking.
+- **Day 9 — Forensic Report Generator**: `ReportGenerator` supporting structured JSON and glassmorphic dark-themed HTML report rendering with 6 executive sections.
+- **Day 10 — Polish & Final Integration**: End-to-end `ForensicPipeline` integration, `CaseManager` evidence inventory tracking, edge-case testing suite (corrupt evidence, malformed logs, missing files, duplicate artifacts, large datasets), and complete CLI command suite.
 
-## Day 5: System & User Activity
-- Implemented Linux SSH authentication log parser (`AuthLogParser`) for `/var/log/auth.log` and `/var/log/secure`.
-- Extracted authentication timelines (failed SSH attempts, successful logins, invalid users, source IPs).
-- Added shell history parser for `.bash_history` and `.zsh_history`.
-- Added user account inspector parsing `/etc/passwd` to identify interactive users.
-- Added cron job artifact parser (`/etc/crontab`, `/etc/cron.d`, `/var/spool/cron/crontabs`).
-- Added running process enumerator scanning `/proc`.
-- Added `tracevault system` CLI subcommand to render Authentication Timelines and user activity.
+---
 
-## Day 6: Timeline Engine
-- Implemented `TimelineEngine` (`src/analyzers/timeline_engine.py`) to unify multi-source forensic artifacts into a common schema: `Timestamp | Source | Event | Severity`.
-- Added automated event normalizers for `auth.log`, `browser`, `filesystem`, and process execution events.
-- Added heuristic severity assignment (`INFO`, `LOW`, `MEDIUM`, `HIGH`, `CRITICAL`).
-- Implemented chronological event sorting mechanism.
-- Added `tracevault timeline` CLI subcommand to allow investigators to reconstruct exact incident sequences.
+## 📥 Installation
 
-## Day 7: Indicators of Compromise (IOCs)
-- Implemented `IOCDetector` (`src/analyzers/ioc_detector.py`) with a lightweight Threat Intelligence engine.
-- Added file & hash IOC matching for known malware hashes (MD5/SHA-256), executables in temporary paths (`/tmp`, `/dev/shm`), and double extension obfuscation.
-- Added network IOC detection for brute force SSH IPs and suspicious URLs.
-- Added system IOC detection for hacking processes (`nc`, `nmap`, `mimikatz`), backdoor root UID 0 accounts, and cron job persistence payloads.
-- Added `tracevault ioc` CLI subcommand outputting structured IOC records (`Type`, `Value`, `Risk`, `Reason`).
+```bash
+# Clone repository
+git clone https://github.com/Ank1t0327/TraceVault.git
+cd TraceVault
 
-## Day 8: Investigation & Correlation Engine
-- Implemented `CorrelationEngine` (`src/analyzers/correlation_engine.py`) to connect isolated forensic findings into structured attack chains.
-- Created attack graph sequence visualization (e.g. `SSH Brute Force → Successful Login → Suspicious Download → Executable Created → Process Started`).
-- Built cumulative Risk Scoring algorithm (0-100) with severity ratings (`LOW`, `MEDIUM`, `HIGH`, `CRITICAL`).
-- Added contributing risk reason tracking (`+ Multiple failed logins`, `+ Suspicious download`, `+ Executable execution`, `+ Persistence detected`).
-- Added `tracevault correlate` CLI subcommand.
+# Ensure Python 3.9+ is installed
+python3 --version
 
-## Day 9: Forensic Report Generator
-- Implemented `ReportGenerator` (`src/reporting/report_generator.py`) supporting structured JSON and glassmorphic dark-theme HTML report exports.
-- Included 6 core report sections: Case Information, Evidence Integrity (SHA-256 & Metadata), Critical Findings Breakdown (Critical, High, Medium, Low), Chronological Timeline, Indicators of Compromise (IOCs), and Executive Investigation Summary.
-- Added `tracevault report` CLI subcommand supporting `--format` (`html`, `json`, `all`), `--case-id`, and `--investigator` flags.
+# Run test suite to verify installation
+pytest
+```
+
+---
+
+## 🚀 CLI Usage Guide
+
+### 1. Case & Evidence Management
+```bash
+# Create a new forensic investigation case
+python tracevault.py case create CASE-2026-INC09 --investigator "Ankit" --description "Server Breach Incident"
+
+# View active case metadata
+python tracevault.py case show
+
+# Add an evidence item to the case inventory with integrity hashing
+python tracevault.py evidence add /path/to/evidence.dd --source "Server Hard Drive" --description "Primary OS Partition"
+```
+
+### 2. Evidence Verification & Hashing
+```bash
+# Calculate SHA-256, SHA-1, MD5 hashes and verify integrity
+python tracevault.py verify /path/to/file.exe --metadata
+```
+
+### 3. File System Analysis
+```bash
+# Analyze directory artifacts with specific filters (executable, suspicious, hidden, recent, large)
+python tracevault.py analyze /var/tmp --type suspicious
+```
+
+### 4. Specialized Parser Subcommands
+```bash
+# Analyze Chromium browser history and downloads
+python tracevault.py browser
+
+# Analyze system auth logs, user accounts, and running processes
+python tracevault.py system
+
+# Generate unified chronological timeline
+python tracevault.py timeline
+
+# Scan for Indicators of Compromise (IOCs)
+python tracevault.py ioc
+
+# Run attack sequence correlation and risk scoring
+python tracevault.py correlate
+```
+
+### 5. Automated Reporting & Full Pipeline Run
+```bash
+# Run full end-to-end forensic analysis pipeline
+python tracevault.py analyze .
+
+# Export forensic investigation reports (HTML & JSON)
+python tracevault.py report --format all --case-id "CASE-2026-INC09" --investigator "Ankit"
+```
+
+---
+
+## 🔍 Sample Investigation Walkthrough
+
+When running an end-to-end correlation analysis:
+```bash
+$ python tracevault.py analyze .
+
+[*] Starting TraceVault Forensic Analysis on target: .
+
+--- Artifact Analysis Summary ---
+[!] payload.exe (Executable)
+
+--- Attack Correlation & Risk Assessment ---
+Attack Chain: SSH Brute Force → Successful Login → Suspicious File Download → Executable Created → Process Started
+Risk Score: 87/100 (HIGH Severity)
+
+✓ Reports Generated Successfully:
+  HTML: reports/report.html
+  JSON: reports/report.json
+```
+
+---
+
+## 📊 Example Forensic Report Output (`reports/report.html`)
+
+The generated HTML report features a modern glassmorphic dark interface containing:
+1. **Case Information Header**: Case ID, Investigator, UTC Timestamp.
+2. **Executive Summary**: Reconstructed threat narrative.
+3. **Evidence Integrity Card**: Cryptographic SHA-256 hash digest, verification badge (`✓ VERIFIED`), and file metadata.
+4. **Critical Findings Breakdown**: Color-coded badges for `CRITICAL`, `HIGH`, `MEDIUM`, `LOW` findings.
+5. **Chronological Timeline Table**: Timestamped sequence across `auth.log`, `browser`, `filesystem`, and `process` sources.
+6. **IOC Threat Grid**: IP addresses, domains, file paths, and hashes with risk levels and reasons.
+
+---
+
+## 🧠 Technical Decisions
+
+1. **Decoupled Architecture**: Parsers produce normalized data objects, separating evidence extraction from correlation logic. This allows seamless addition of new artifact parsers without refactoring the engine.
+2. **Safe SQLite Database Locks**: `ChromiumParser` creates temporary read-only database copies before executing queries, preventing file locking conflicts during live system analysis.
+3. **Heuristic Risk Scoring**: Risk score (0-100) is calculated via weighted forensic indicators (e.g., SSH brute force + success = +35 points, reverse shell execution = +40 points), giving immediate context to investigators.
+4. **Resilience & Edge-Case Safety**: Log parsers and file analyzers gracefully handle malformed log lines, missing files, corrupted binaries, and unparseable dates without crashing the pipeline.
+
+---
+
+## ⚠️ Limitations
+
+- **Platform Dependency**: System authentication log parsing is tuned for Linux (`/var/log/auth.log` and `/var/log/secure`). Windows Event Log parsing (`.evtx`) requires future extension.
+- **SQLite History Dependencies**: Browser forensics currently targets Chromium-based browsers (Chrome, Chromium, Brave, Edge). Firefox SQLite schema support is planned.
+
+---
+
+## 🔮 Future Improvements
+
+- **Graphviz / DOT Graph Export**: Render visual attack graph diagrams directly alongside the textual attack chain.
+- **YARA Rule Integration**: Integrate YARA scanning for deep file payload signature identification.
+- **Memory Forensics Parser**: Support Volatility dump analysis for RAM artifact extraction.
