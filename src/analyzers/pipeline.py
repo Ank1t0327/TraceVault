@@ -50,8 +50,9 @@ class ForensicPipeline:
             sorted_timeline = TimelineEngine.get_demo_timeline()
 
         # 6. IOC Threat Detection
-        urls = [h.get("url", "") for h in browser_history] if browser_history else []
+        urls = [h.get("url", "") for h in browser_history.get("urls", [])] if isinstance(browser_history, dict) and "urls" in browser_history else []
         ioc_detector = IOCDetector(
+
             auth_events=auth_events,
             browser_urls=urls,
             fs_results=fs_results,
