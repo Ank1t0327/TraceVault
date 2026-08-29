@@ -135,6 +135,13 @@ class ChromiumParser:
                 return path
         return None
 
+    @staticmethod
+    def convert_chrome_time(webkit_timestamp):
+        return webkit_to_datetime(webkit_timestamp)
+
+    def parse_history(self):
+        return self.parse()
+
     def parse(self):
         """Parse browser history DB and return structured results."""
         if not self.history_db_path or not os.path.exists(self.history_db_path):
@@ -143,6 +150,7 @@ class ChromiumParser:
         conn, temp_dir = open_sqlite_readonly(self.history_db_path)
         if not conn:
             return self.get_demo_data()
+
 
         try:
             urls = extract_urls_and_visits(conn)

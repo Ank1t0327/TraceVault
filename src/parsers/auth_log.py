@@ -61,6 +61,7 @@ class AuthLogParser:
 
     def parse(self):
         events = []
+        is_custom_path = self.log_path is not None and self.log_path not in ["/var/log/auth.log", "/var/log/secure"]
         if self.log_path and os.path.exists(self.log_path):
             try:
                 with open(self.log_path, "r", encoding="utf-8", errors="ignore") as f:
@@ -71,9 +72,10 @@ class AuthLogParser:
             except OSError:
                 pass
 
-        if not events:
+        if not events and not is_custom_path:
             return self.get_demo_events()
         return events
+
 
     @staticmethod
     def get_demo_events():

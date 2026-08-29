@@ -89,10 +89,20 @@ class FileSystemAnalyzer:
             elif filter_type == 'suspicious' and self.is_suspicious_filename(filepath):
                 flag = 'Suspicious filename'
                 is_suspicious = True
+            elif filter_type == 'all':
+                flag = 'File'
+                is_suspicious = True
             elif filter_type is None:
                 if self.is_suspicious_filename(filepath):
                     flag = 'Suspicious filename'
                     is_suspicious = True
+                elif self.is_executable(filepath):
+                    flag = 'Executable'
+                    is_suspicious = True
+                else:
+                    flag = 'File'
+                    is_suspicious = True
+
 
             if is_suspicious:
                 results.append({

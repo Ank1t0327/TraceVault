@@ -100,11 +100,31 @@ class TimelineEngine:
     def __init__(self, events=None):
         self.events = events or []
 
+    def add_event(self, event: TimelineEvent):
+        self.events.append(event)
+
     def add_events(self, events):
         self.events.extend(events)
 
+    def normalize_auth_events(self, auth_events):
+        self.events.extend(normalize_auth_events(auth_events))
+
+    def normalize_browser_events(self, browser_data):
+        self.events.extend(normalize_browser_events(browser_data))
+
+    def normalize_fs_results(self, fs_results):
+        self.events.extend(normalize_fs_events(fs_results))
+
     def sort(self):
-        """Sort timeline events chronologically."""
+        """Sort timeline events chronologically with deduplication."""
+        seen = set()
+        unique_events = []
+        for e in self.events:
+            key = (e.timestamp, e.source, e.event)
+            if key not in seen:
+                seen.add(key)
+                unique_events.append(e)
+
         def parse_sort_val(event):
             parts = event.timestamp.split(":")
             try:
@@ -112,12 +132,14 @@ class TimelineEngine:
                     return int(parts[0]) * 3600 + int(parts[1]) * 60 + int(parts[2])
                 elif len(parts) == 2:
                     return int(parts[0]) * 3600 + int(parts[1]) * 60
-            except ValueError:
+            except (ValueError, AttributeError):
                 pass
             return event.sort_key
 
-        self.events.sort(key=parse_sort_val)
+        unique_events.sort(key=parse_sort_val)
+        self.events = unique_events
         return self.events
+
 
     @staticmethod
     def get_demo_timeline():
