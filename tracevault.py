@@ -81,22 +81,58 @@ def collect(args):
     print("Initializing acquisition phase...")
     print("Collecting digital evidence and maintaining chain of custody.")
 
-def analyze(args):
-    analyzer = FileSystemAnalyzer(args.path)
-    results = analyzer.run(filter_type=args.type)
-    
-    if not results:
-        print("No interesting artifacts found.")
-        return
-
-    for res in results:
-        print(f"[!] {os.path.basename(res['file'])}")
-        print(f"    Location: {os.path.dirname(res['file'])}/")
-        print(f"    Type: {res['type']}")
-        print(f"    Modified: {res['modified']}\n")
-
-
+from src.collectors.case_manager import CaseManager
+from src.analyzers.pipeline import ForensicPipeline
 from src.reporting.report_generator import ReportGenerator, ReportData
+
+def case_cmd(args):
+    cm = CaseManager()
+    if args.action == "create":
+        info = cm.create_case(args.case_id, args.investigator or "Lead Analyst", args.description or "")
+        print("✓ Forensic Case Created Successfully:")
+        print(f"  Case ID: {info['case_id']}")
+        print(f"  Investigator: {info['investigator']}")
+        print(f"  Created At: {info['created_at']}")
+    elif args.action == "show":
+        info = cm.get_case_info()
+        print(json.dumps(info, indent=2))
+
+def evidence_cmd(args):
+    cm = CaseManager()
+    if args.action == "add":
+        try:
+            item = cm.add_evidence(args.file, source=args.source or "Disk Image", description=args.description or "")
+            print("✓ Evidence Added & Verified:")
+            print(f"  File: {item['file']}")
+            print(f"  SHA-256: {item['sha256']}")
+            print(f"  Source: {item['source']}")
+        except Exception as e:
+            print(f"Error adding evidence: {e}")
+
+def analyze(args):
+    target = getattr(args, 'path', '.') or '.'
+    print(f"[*] Starting TraceVault Forensic Analysis on target: {target}")
+    
+    # Run full end-to-end pipeline
+    pipeline = ForensicPipeline()
+    res = pipeline.run(target)
+    
+    print("\n--- Artifact Analysis Summary ---")
+    analyzer = FileSystemAnalyzer(target)
+    fs_results = analyzer.run(filter_type=args.type)
+    if fs_results:
+        for item in fs_results[:5]:
+            print(f"[!] {os.path.basename(item['file'])} ({item['type']})")
+    
+    print("\n--- Attack Correlation & Risk Assessment ---")
+    corr = res["correlation"]
+    print(f"Attack Chain: {' → '.join(corr['chain'])}")
+    print(f"Risk Score: {corr['risk_score']}/100 ({corr['severity']} Severity)")
+    
+    print(f"\n✓ Reports Generated Successfully:")
+    print(f"  HTML: {res['reports']['html']}")
+    print(f"  JSON: {res['reports']['json']}")
+
 
 def report(args):
     print("Initializing TraceVault Report Generator...")
@@ -162,11 +198,32 @@ def main():
     parser_collect = subparsers.add_parser("collect", help="Acquire and collect digital evidence")
     parser_collect.set_defaults(func=collect)
     
+    # Case command
+    parser_case = subparsers.add_parser("case", help="Manage forensic investigation cases")
+    parser_case_sub = parser_case.add_subparsers(dest="action")
+    parser_case_create = parser_case_sub.add_parser("create", help="Create a new forensic case")
+    parser_case_create.add_argument("case_id", help="Unique Case Identifier")
+    parser_case_create.add_argument("--investigator", help="Lead investigator name")
+    parser_case_create.add_argument("--description", help="Case description")
+    parser_case_create.set_defaults(func=case_cmd)
+    parser_case_show = parser_case_sub.add_parser("show", help="Show active case metadata")
+    parser_case_show.set_defaults(func=case_cmd)
+
+    # Evidence command
+    parser_evidence = subparsers.add_parser("evidence", help="Manage case evidence inventory")
+    parser_evidence_sub = parser_evidence.add_subparsers(dest="action")
+    parser_evidence_add = parser_evidence_sub.add_parser("add", help="Add evidence file to active case")
+    parser_evidence_add.add_argument("file", help="Path to evidence file")
+    parser_evidence_add.add_argument("--source", help="Source of evidence")
+    parser_evidence_add.add_argument("--description", help="Description of evidence")
+    parser_evidence_add.set_defaults(func=evidence_cmd)
+
     # Analyze command
     parser_analyze = subparsers.add_parser("analyze", help="Analyze forensic artifacts and evidence")
-    parser_analyze.add_argument("path", help="Directory or file to analyze")
+    parser_analyze.add_argument("path", nargs="?", default=".", help="Directory or file to analyze (default: current dir)")
     parser_analyze.add_argument("--type", help="Filter by type (e.g., executable, hidden, suspicious, large, recent)")
     parser_analyze.set_defaults(func=analyze)
+
     
     # Report command
     parser_report = subparsers.add_parser("report", help="Generate forensic reports")
