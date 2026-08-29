@@ -2,6 +2,7 @@ from .fs_analyzer import FileSystemAnalyzer
 from .timeline_engine import TimelineEngine, TimelineEvent, determine_severity
 from .ioc_detector import IOCDetector, IOC
 from .correlation_engine import CorrelationEngine, CorrelationNode, calculate_risk_score
+from .pipeline import ForensicPipeline
 
 __all__ = [
     "FileSystemAnalyzer",
@@ -12,5 +13,6 @@ __all__ = [
     "IOC",
     "CorrelationEngine",
     "CorrelationNode",
-    "calculate_risk_score"
+    "calculate_risk_score",
+    "ForensicPipeline"
 ]
